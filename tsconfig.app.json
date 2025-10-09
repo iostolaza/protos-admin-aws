@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "strict": true,
+    "outDir": "./out-tsc/app",
+    "types": [],
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true
+  },
+  "files": [],
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts",
+    "src/test-setup.ts"
+  ]
+}

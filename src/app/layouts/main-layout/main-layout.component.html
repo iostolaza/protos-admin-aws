@@ -1,0 +1,23 @@
+
+<!-- src/app/layouts/main-layout/main-layout.component.html -->
+ 
+<div class="flex h-screen flex-col overflow-hidden">
+  <!-- Top Menu (bg-card for distinction) -->
+  <app-top-menu class="bg-card"></app-top-menu>
+
+  <!-- Row for Sidebar and Main -->
+  <div class="flex flex-1 overflow-hidden">
+    <!-- Sidebar (bg-card) -->
+    <app-sidebar class="bg-card"></app-sidebar>
+
+    <!-- Main Content (bg-background) -->
+    <main id="main-content" class="flex-1 overflow-y-auto bg-background scrollbar-thumb-rounded scrollbar-track-rounded scrollbar-thin scrollbar-track-transparent scrollbar-thumb-muted">
+      <div class="mx-auto px-4 py-4 sm:px-8 lg:container">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+  </div>
+
+  <!-- Footer (bg-card) -->
+  <app-footer class="bg-card"></app-footer>
+</div>

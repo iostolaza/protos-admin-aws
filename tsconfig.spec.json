@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "strict": true,
+    "outDir": "./out-tsc/spec",
+    "types": ["jasmine", "node"],
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true
+  },
+  "files": ["src/test.ts", "src/polyfills.ts"],
+  "include": ["src/**/*.spec.ts", "src/**/*.d.ts"]
+}

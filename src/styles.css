@@ -1,0 +1,532 @@
+/* styles.css - Global Styles for App Layout, Animations, Colors, Themes */
+/* =====================================================================
+ * 1. RESETS & NORMALIZATION
+ * ===================================================================== */
+@layer base {
+  *, ::after, ::before, ::backdrop, ::file-selector-button { /* Restored full selector */
+    border-color: var(--color-gray-200, currentColor);
+  }
+  body {
+    font-family: var(--font-inter);
+    background-color: var(--background);
+  }
+}
+/* =====================================================================
+ * 2. PLUGINS & IMPORTS
+ * ===================================================================== */
+/* UPDATED: Changed path to "../tailwind.config.js" (relative from src/ to root; resolves v4 config load error) */
+@config "../tailwind.config.js";
+@import 'tailwindcss';
+@source inline("{group-hover:}hidden {group-hover:}block"); /* Safelist for hover variants */
+@plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/typography";
+@plugin "tailwind-scrollbar";
+/* =====================================================================
+ * 3. CUSTOM VARIANTS
+ * ===================================================================== */
+@custom-variant dark (&:where(.dark, .dark *));
+/* =====================================================================
+ * 4. THEME DEFINITIONS (FONTS, ANIMATIONS, SHADOWS, COLORS)
+ * ===================================================================== */
+@theme {
+  /* Fonts */
+  --font-*: initial;
+  --font-inter: Inter, system-ui, sans-serif;
+  --font-roboto: Roboto, system-ui, sans-serif;
+  /* Animations */
+  --animate-wiggle: wiggle 1s ease-in-out infinite;
+  --animate-fade-in-down: fade-in-down 0.3s ease-out;
+  --animate-fade-out-down: fade-out-down 0.3s ease-out;
+  --animate-fade-in-up: fade-in-up 0.3s ease-out;
+  --animate-fade-out-up: fade-out-up 0.3s ease-out;
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(-3deg); }
+    50% { transform: rotate(3deg); }
+  }
+  @keyframes fade-in-down {
+    0% { opacity: 0; transform: translateY(-10px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fade-out-down {
+    from { opacity: 1; transform: translateY(0px); }
+    to { opacity: 0; transform: translateY(10px); }
+  }
+  @keyframes fade-in-up {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fade-out-up {
+    from { opacity: 1; transform: translateY(0px); }
+    to { opacity: 0; transform: translateY(10px); }
+  }
+  /* Shadows */
+  --shadow-custom: 0px 0px 50px 0px rgb(82 63 105 / 15%);
+  /* Color Vars Mapping */
+  --color-border: var(--border);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success); /* New: For positive/constructive actions */
+  --color-success-foreground: var(--success-foreground); /* New: Text on success bg */
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-form-bg: var(--form-bg);
+  --color-text-placeholder: var(--text-placeholder);
+}
+
+@layer base {
+  /* Light Theme (Base) - Added symmetry for text roles */
+  :root {
+    /* Core BG / text */
+    --background: #f7f7fb;        /* light gray */
+    --foreground: #111827;        /* dark gray */
+
+    /* Semantic text roles - Mirrored for light */
+    --text-heading: #0f1724;      /* near black (bold titles) */
+    --text-body: #111827;         /* dark gray */
+    --text-label: #374151;        /* medium gray */
+    --text-placeholder: #9ca3af;  /* light gray */
+    --text-muted: #6b7280;        /* muted gray */
+
+    /* Cards & surfaces */
+    --card: #ffffff;              /* white */
+    --card-foreground: #111827;
+
+    /* Forms and Inputs */
+    --form-bg: #ffffff;           /* white */
+    --border: #e6e9ef;            /* light border gray */
+    --muted: #f3f4f6;             /* very light gray */
+    --muted-foreground: #6b7280;  /* muted gray */
+
+    /* Primary / Accent (blue as requested) */
+    --primary: #3b82f6;           /* blue-500 */
+    --primary-foreground: #ffffff;
+
+    /* Success / Destructive */
+    --success: #16a34a;           /* green-600 */
+    --success-foreground: #ffffff;
+    --destructive: #dc2626;       /* red-600 */
+    --destructive-foreground: #ffffff;
+
+    /* Shadows */
+    --shadow-1: 0 1px 2px rgba(16,24,40,0.04);
+    --shadow-2: 0 6px 18px rgba(16,24,40,0.08);
+    --secondary: #f3f4f6;         /* light gray */
+    --secondary-foreground: #111827;
+  }
+  /* Dark Theme - Your updates confirmed; propagated below */
+  .dark {
+    --background: #212121;        /* near-black */
+    --foreground: #e6eef8;        /* light gray */
+
+    --text-heading: #eef2ff;      /* near white */
+    --text-body: #e6eef8;         /* light gray */
+    --text-label: #cbd5e1;        /* medium light gray */
+    --text-placeholder: #94a3b8;  /* muted light gray */
+    --text-muted: #9aa7bb;        /* muted gray */
+
+    --card: #0e0e0e;              /* dark gray */
+    --input-bg: #171717;
+    --card-foreground: #e6eef8;
+
+    --form-bg: #111827;           /* darker gray */
+    --border: #273244;            /* medium dark gray */
+    --muted: #111827;             /* dark gray */
+    --muted-foreground: #9aa7bb;  /* muted light gray */
+
+    --primary: #93c5fd;           /* blue-300 lighter */
+    --primary-foreground: #06121a;/* near black */
+
+    --success: #34d399;           /* green-400 lighter */
+    --success-foreground: #06121a;
+    --destructive: #fb7185;       /* red-400 lighter */
+    --destructive-foreground: #06121a;
+
+    --shadow-1: 0 1px 2px rgba(2,6,23,0.6);
+    --shadow-2: 0 8px 30px rgba(2,6,23,0.55);
+    --secondary: #111827;         /* dark gray */
+    --secondary-foreground: #e6eef8;
+  }
+  /* System Preference Auto-Dark - Your updates confirmed */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+      --background: #212121;
+      --foreground: #e6eef8;
+      --card: #0e0e0e;
+      --card-foreground: #e6eef8;
+      --primary: #93c5fd;
+      --primary-foreground: #06121a;
+      --muted: #111827;
+      --muted-foreground: #9aa7bb;
+      --success: #34d399;
+      --success-foreground: #06121a;
+      --destructive: #fb7185;
+      --destructive-foreground: #06121a;
+      --border: #273244;
+      --secondary: #111827;
+      --secondary-foreground: #e6eef8;
+      --text-heading: #eef2ff;
+      --text-body: #e6eef8;
+      --text-label: #cbd5e1;
+      --text-placeholder: #94a3b8;
+      --text-muted: #9aa7bb;
+      --form-bg: #111827;
+      --shadow-1: 0 1px 2px rgba(2,6,23,0.6);
+      --shadow-2: 0 8px 30px rgba(2,6,23,0.55);
+    }
+  }
+  /* Custom Themes - Propagated new dark vars for consistency */
+  :root[data-theme='blue'] {
+    --primary: #2490FF;
+  }
+  .dark[data-theme='blue'] {
+    --background: #212121; /* Updated: New mid-gray */
+    --foreground: #e6eef8; /* Lighter grey text for contrast */
+    --card: #0e0e0e; /* Updated: New near-black */
+    --card-foreground: #e6eef8; /* Same as foreground */
+    --primary: #60a5fa; /* Lighter blue for dark */
+    --primary-foreground: #06121a;
+    --muted: #111827;
+    --muted-foreground: #9aa7bb;
+    --success: #34d399; /* New (or customize if needed) */
+    --success-foreground: #06121a; /* New */
+    --destructive: #fb7185;
+    --destructive-foreground: #06121a;
+    --border: #273244;
+    --secondary: #111827;
+    --secondary-foreground: #e6eef8;
+    --text-heading: #eef2ff; /* Added: Propagation */
+    --text-body: #e6eef8;
+    --text-label: #cbd5e1;
+    --text-placeholder: #94a3b8;
+    --text-muted: #9aa7bb;
+    --form-bg: #111827;
+    --shadow-1: 0 1px 2px rgba(2,6,23,0.6);
+    --shadow-2: 0 8px 30px rgba(2,6,23,0.55);
+  }
+  :root[data-theme='violet'] {
+    --primary: #6E56CF;
+  }
+  .dark[data-theme='violet'] {
+    --background: #212121; /* Updated */
+    --foreground: #e6eef8;
+    --card: #0e0e0e; /* Updated */
+    --card-foreground: #e6eef8;
+    --primary: #8a73ff; /* Lighter violet */
+    --primary-foreground: #06121a;
+    --muted: #111827;
+    --muted-foreground: #9aa7bb;
+    --success: #34d399;
+    --success-foreground: #06121a;
+    --destructive: #fb7185;
+    --destructive-foreground: #06121a;
+    --border: #273244;
+    --secondary: #111827;
+    --secondary-foreground: #e6eef8;
+    --text-heading: #eef2ff; /* Added */
+    --text-body: #e6eef8;
+    --text-label: #cbd5e1;
+    --text-placeholder: #94a3b8;
+    --text-muted: #9aa7bb;
+    --form-bg: #111827;
+    --shadow-1: 0 1px 2px rgba(2,6,23,0.6);
+    --shadow-2: 0 8px 30px rgba(2,6,23,0.55);
+  }
+  :root[data-theme='red'] {
+    --primary: #CC0033;
+  }
+  .dark[data-theme='red'] {
+    --background: #212121; /* Updated */
+    --foreground: #e6eef8;
+    --card: #0e0e0e; /* Updated */
+    --card-foreground: #e6eef8;
+    --primary: #f87171; /* Lighter red */
+    --primary-foreground: #06121a;
+    --muted: #111827;
+    --muted-foreground: #9aa7bb;
+    --success: #34d399;
+    --success-foreground: #06121a;
+    --destructive: #fb7185;
+    --destructive-foreground: #06121a;
+    --border: #273244;
+    --secondary: #111827;
+    --secondary-foreground: #e6eef8;
+    --text-heading: #eef2ff; /* Added */
+    --text-body: #e6eef8;
+    --text-label: #cbd5e1;
+    --text-placeholder: #94a3b8;
+    --text-muted: #9aa7bb;
+    --form-bg: #111827;
+    --shadow-1: 0 1px 2px rgba(2,6,23,0.6);
+    --shadow-2: 0 8px 30px rgba(2,6,23,0.55);
+  }
+  :root[data-theme='orange'] {
+    --primary: #EA580C;
+  }
+  .dark[data-theme='orange'] {
+    --background: #212121; /* Updated */
+    --foreground: #e6eef8;
+    --card: #0e0e0e; /* Updated */
+    --card-foreground: #e6eef8;
+    --primary: #fb923c; /* Lighter orange */
+    --primary-foreground: #06121a;
+    --muted: #111827;
+    --muted-foreground: #9aa7bb;
+    --success: #34d399;
+    --success-foreground: #06121a;
+    --destructive: #fb7185;
+    --destructive-foreground: #06121a;
+    --border: #273244;
+    --secondary: #111827;
+    --secondary-foreground: #e6eef8;
+    --text-heading: #eef2ff; /* Added */
+    --text-body: #e6eef8;
+    --text-label: #cbd5e1;
+    --text-placeholder: #94a3b8;
+    --text-muted: #9aa7bb;
+    --form-bg: #111827;
+    --shadow-1: 0 1px 2px rgba(2,6,23,0.6);
+    --shadow-2: 0 8px 30px rgba(2,6,23,0.55);
+  }
+  :root[data-theme='yellow'] {
+    --primary: #FACC15;
+  }
+  .dark[data-theme='yellow'] {
+    --background: #212121; /* Updated */
+    --foreground: #e6eef8;
+    --card: #0e0e0e; /* Updated */
+    --card-foreground: #e6eef8;
+    --primary: #fde047; /* Lighter yellow */
+    --primary-foreground: #06121a;
+    --muted: #111827;
+    --muted-foreground: #9aa7bb;
+    --success: #34d399;
+    --success-foreground: #06121a;
+    --destructive: #fb7185;
+    --destructive-foreground: #06121a;
+    --border: #273244;
+    --secondary: #111827;
+    --secondary-foreground: #e6eef8;
+    --text-heading: #eef2ff; /* Added */
+    --text-body: #e6eef8;
+    --text-label: #cbd5e1;
+    --text-placeholder: #94a3b8;
+    --text-muted: #9aa7bb;
+    --form-bg: #111827;
+    --shadow-1: 0 1px 2px rgba(2,6,23,0.6);
+    --shadow-2: 0 8px 30px rgba(2,6,23,0.55);
+  }
+  :root[data-theme='green'] {
+    --primary: #22C55E;
+  }
+  .dark[data-theme='green'] {
+    --background: #212121; /* Updated */
+    --foreground: #e6eef8;
+    --card: #0e0e0e; /* Updated */
+    --card-foreground: #e6eef8;
+    --primary: #4ade80; /* Lighter green */
+    --primary-foreground: #06121a;
+    --success: #34d399;
+    --success-foreground: #06121a;
+    --muted: #111827;
+    --muted-foreground: #9aa7bb;
+    --destructive: #fb7185;
+    --destructive-foreground: #06121a;
+    --border: #273244;
+    --secondary: #111827;
+    --secondary-foreground: #e6eef8;
+    --text-heading: #eef2ff; /* Added */
+    --text-body: #e6eef8;
+    --text-label: #cbd5e1;
+    --text-placeholder: #94a3b8;
+    --text-muted: #9aa7bb;
+    --form-bg: #111827;
+    --shadow-1: 0 1px 2px rgba(2,6,23,0.6);
+    --shadow-2: 0 8px 30px rgba(2,6,23,0.55);
+  }
+}
+/* =====================================================================
+ * 5. UTILITIES & CUSTOM CLASSES
+ * ===================================================================== */
+@utility container {
+  padding-inline: 1rem;
+  @media (width >= theme(--breakpoint-sm)) { padding-inline: 2rem; }
+  @media (width >= theme(--breakpoint-lg)) { padding-inline: 4rem; }
+  @media (width >= theme(--breakpoint-xl)) { padding-inline: 5rem; }
+  @media (width >= theme(--breakpoint-2xl)) { padding-inline: 6rem; }
+}
+@utility equal-row-grid {
+  display: grid;
+  grid-auto-rows: minmax(0, 1fr);
+}
+@utility dropdown-content {
+  @apply pointer-events-none scale-95 opacity-0 duration-100 ease-in;
+  .dropdown:hover>& {
+    @apply pointer-events-auto block scale-100 animate-fade-in-up opacity-100 duration-200;
+  }
+}
+@utility dropdown {
+  &:hover>.dropdown-content {
+    @apply pointer-events-auto block scale-100 animate-fade-in-up opacity-100 duration-200;
+  }
+}
+/* Scrollbar Support */
+@supports selector(::-webkit-scrollbar) {
+  .supports-scrollbars\:pr-2 {
+    padding-right: 0.5rem;
+  }
+}
+/* NEW: Shared wrapper for uniform page content (dynamic width, consistent padding/spacing) */
+@utility page-wrapper {
+  @apply w-full max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex flex-col min-h-0 flex-1;
+}
+/* NEW: Shared title style for uniformity (size, font, color, spacing) */
+@utility page-title {
+  @apply text-2xl font-bold text-foreground mb-6;
+}
+/* NEW: Shared utility for profile cards (uniform padding, elevation; matches gap-6) */
+@utility profile-card {
+  @apply bg-card text-card-foreground p-6 rounded-lg shadow-custom flex flex-col h-full elevation-100;
+}
+/* NEW: Elevation utilities as @utility (resolves @apply; uses theme vars for light/dark adaptability) */
+@utility elevation-100 {
+  box-shadow: var(--shadow-1);
+}
+@utility elevation-200 {
+  box-shadow: var(--shadow-2);
+}
+
+@utility ledger-card {
+  @apply rounded-lg bg-card px-8 py-8 border border-border;
+}
+/* =====================================================================
+ * 6. COMPONENT-SPECIFIC STYLES & OVERRIDES
+ * ===================================================================== */
+@layer components {
+  /* Custom Forms */
+  [type='text'],
+  [type='email'],
+  [type='url'],
+  [type='password'],
+  [type='number'],
+  [type='date'],
+  [type='datetime-local'],
+  [type='month'],
+  [type='search'],
+  [type='tel'],
+  [type='time'],
+  [type='week'],
+  [multiple],
+  textarea,
+  select {
+    @apply w-full rounded-md border border-border bg-form-bg px-4 py-2 text-sm text-foreground placeholder-text-placeholder focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all;
+  }
+  [type='checkbox'],
+  [type='radio'] {
+    @apply h-4 w-4 rounded border-border bg-form-bg checked:border-primary checked:bg-primary focus:ring-2 focus:ring-primary/50;
+  }
+.chat-item-hover {
+  @apply flex items-center justify-between gap-3 p-4 cursor-pointer hover:bg-muted/50 dark:hover:bg-muted/80 rounded-md;
+}
+.chat-item-text {
+  @apply font-medium text-foreground truncate;
+}
+.delete-btn {
+  @apply text-destructive hover:text-destructive/80 transition-opacity opacity-100 dark:text-destructive-foreground;
+}
+.summary-pill {
+  @apply px-4 py-2 rounded-full font-medium text-sm bg-muted/50 text-muted-foreground;
+}
+svg-icon svg {
+  color: var(--primary);
+}
+svg path {
+  stroke: currentColor !important;
+}
+  /* Semantic text utilities (map to CSS variables) */
+  .text-heading { color: var(--text-heading); }
+  .text-body { color: var(--text-body); }
+  .text-label { color: var(--text-label); }
+  .text-placeholder { color: var(--text-placeholder); }
+  .text-muted { color: var(--text-muted); }
+
+  /* Background / surface utilities */
+  .bg-app { background-color: var(--background); }
+  .bg-card { background-color: var(--card); color: var(--card-foreground); box-shadow: var(--shadow-1); }
+  .bg-form { background-color: var(--form-bg); color: var(--card-foreground); }
+
+  /* Border */
+  .border-muted { border-color: var(--border); }
+
+  /* Button variants (semantic) */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition shadow-sm;
+    border: 1px solid transparent;
+  }
+  .btn-primary {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    border-color: transparent;
+    box-shadow: var(--shadow-1);
+  }
+  .btn-primary:active { transform: translateY(1px); }
+
+  .btn-neutral {
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+    border-color: var(--border);
+  }
+
+  .btn-destructive {
+    background-color: var(--destructive);
+    color: var(--destructive-foreground);
+    border-color: transparent;
+  }
+  /* UPDATED: Extended button hovers (opacity fade via vars; handles dark/light automatically—no explicit dark:text-*) */
+  .btn-primary:hover {
+    background-color: color-mix(in srgb, var(--primary) 90%, transparent);
+  }
+  .btn-neutral:hover {
+    background-color: color-mix(in srgb, var(--muted) 90%, transparent);
+  }
+  .btn-destructive:hover {
+    background-color: color-mix(in srgb, var(--destructive) 90%, transparent);
+  }
+  .btn-success:hover { /* NEW: For pay/send buttons */
+    background-color: color-mix(in srgb, var(--success) 90%, transparent);
+  }
+
+  .icon-btn-hover {
+    @apply text-primary hover:text-primary/80 transition-colors;
+  }
+  .icon-btn-hover svg {
+    @apply group-hover:text-muted-foreground;
+  }
+
+  /* UPDATED: Table rows with consistent hover (muted/50 for light, /80 for dark via vars) */
+  .table-row-hover {
+    @apply border-b border-dashed border-border hover:bg-muted/50 dark:hover:bg-muted/80;
+  }
+
+  /* Balance / numeric tokens */
+  .balance-positive { color: var(--success); font-weight: 700; } /* Paid (green) */
+  .balance-negative { color: var(--destructive); font-weight: 700; } /* Owe (red) */
+  .balance-zero { color: var(--text-muted); font-weight: 600; }
+
+  /* REMOVED: elevation-100/200 defs (conflicted with @utility; now handled via CSS vars/directives for v4 compatibility) */
+
+  /* Utility for subtle separators that meet 3:1 for non-text UI components */
+  .ui-separator { background-color: var(--border); height: 1px; }
+
+  /* Nav hover - Simplified: Bg + group for child text dim */
+  .nav-hover {
+    @apply hover:bg-muted/50 transition-colors duration-200; /* Bg hover; add 'group' class in HTML for icons/labels (e.g., group-hover:text-muted) */
+  }
+}

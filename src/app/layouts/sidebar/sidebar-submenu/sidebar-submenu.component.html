@@ -1,0 +1,42 @@
+<!-- src/app/layouts/sidebar/sidebar-submenu/sidebar-submenu.component.html -->
+ 
+<div class="max-h-0 overflow-hidden pt-1 transition-all duration-500 ltr:pl-4 rtl:pr-4" [ngClass]="{ hidden: !menuService.showSideBar, 'max-h-screen': submenu.expanded }">
+  <ul class="border-border text-foreground flex flex-col border-dashed ltr:border-l ltr:pl-2 rtl:border-r rtl:pr-2"> <!-- Base foreground -->
+    @for (sub of submenu.children; track sub.label) {
+      <li>
+        <div class="relative flex nav-hover" (click)="toggleMenu(sub)"> <!-- Bg hover -->
+          <ng-container [ngTemplateOutlet]="sub.children ? childMenu : parentMenu" [ngTemplateOutletContext]="{ sub: sub }"></ng-container>
+          <ng-template #parentMenu let-sub="sub">
+            @if (sub.route !== '/logout') {
+              <a [routerLink]="sub.route" routerLinkActive="text-primary" [routerLinkActiveOptions]="{ exact: true }" class="text-foreground inline-block w-full rounded-lg px-4 py-2 text-xs group-hover:text-muted-foreground"> <!-- Base foreground; active primary; hover muted -->
+                {{ sub.label }}
+              </a>
+            } @else {
+              <button (click)="$event.stopPropagation(); menuService.logout()" class="nav-hover text-foreground inline-block w-full rounded-lg px-4 py-2 text-xs font-semibold group-hover:text-muted-foreground"> <!-- Base foreground; hover muted -->
+                {{ sub.label }}
+              </button>
+            }
+            @if (menuService.isActive(sub.route)) {
+              <span class="size-1.5 bg-primary absolute flex translate-y-3.5 items-center rounded-full ltr:-translate-x-[11.5px] rtl:translate-x-[11.5px]"></span>
+            }
+          </ng-template>
+          <ng-template #childMenu let-sub="sub">
+            <a class="text-foreground inline-block w-full cursor-pointer px-4 py-2 text-xs group-hover:text-muted-foreground"> <!-- Base foreground; hover muted -->
+              {{ sub.label }}
+            </a>
+            <button [ngClass]="{ hidden: !menuService.showSideBar }" class="text-foreground flex cursor-pointer items-center justify-end px-2 transition-all duration-500 group-hover:text-muted-foreground"> <!-- Base foreground; hover muted -->
+              @if (!sub.expanded) {
+                <svg-icon [src]="getIconPath('plus')" svgClass="h-4 w-4 text-success text-foreground group-hover:text-muted-foreground"></svg-icon> <!-- Base success shade; hover muted -->
+              } @else {
+                <svg-icon [src]="getIconPath('minus')" svgClass="h-4 w-4 text-destructive text-foreground group-hover:text-muted-foreground"></svg-icon> <!-- Base destructive shade; hover muted -->
+              }
+            </button>
+          </ng-template>
+        </div>
+        @if (sub.children?.length) {
+          <app-sidebar-submenu [submenu]="sub"></app-sidebar-submenu>
+        }
+      </li>
+    }
+  </ul>
+</div>
