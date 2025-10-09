@@ -41,6 +41,10 @@
             ],
             "scripts": [],
             "extractLicenses": false,
+            "polyfills": [
+              "zone.js",
+              "src/polyfills.ts" 
+            ],
             "namedChunks": true,
             "browser": "src/main.ts",
             "allowedCommonJsDependencies": [

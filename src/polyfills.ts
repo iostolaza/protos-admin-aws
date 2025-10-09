@@ -5,6 +5,11 @@
 // Fix 'global is not defined' for Amplify Storage/buffer (Node global in browser)
 (globalThis as any).global = globalThis;
 
+(window as any).global = window;
+(window as any).process = {
+  env: { DEBUG: undefined },
+};
+
 // Optional: Process shim for Node env (e.g., crypto/debug in deps)
 (globalThis as any).process = {
   env: { DEBUG: undefined },

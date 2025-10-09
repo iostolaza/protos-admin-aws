@@ -30,7 +30,8 @@
     "typeCheckHostBindings": true,
     "strictTemplates": true
   },
-  "files": ["src/main.ts"],
+  "files": ["src/main.ts",
+    "src/polyfills.ts"],
   "include": ["src/**/*", "amplify/**/*"],
   "exclude": ["node_modules", "tmp"]
 }
