@@ -15,7 +15,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideAngularSvgIcon } from 'angular-svg-icon';
 
 // Import components and routes
-import { AppComponent } from './app';
+import { AppComponent } from './app.component';
 import { routes } from './app.routes';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout.component'; 
 

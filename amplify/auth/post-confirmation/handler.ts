@@ -1,11 +1,13 @@
 
-// amplify/auth/post-confirmation/handler.ts
+// amplify/auth/post-confirmation/handler.ts 
 
-import type { PostConfirmationTriggerHandler } from 'aws-lambda'; // @types/aws-lambda ^8.10.145 (latest)
+import type { PostConfirmationTriggerHandler } from 'aws-lambda'; 
 import { type Schema } from '../../data/resource';
-import { Amplify } from 'aws-amplify'; // aws-amplify ^6.6.3 (latest)
+import { Amplify } from 'aws-amplify'; 
 import { generateClient } from 'aws-amplify/data';
 import { env } from '$amplify/env/post-confirmation';
+
+console.log('Environment variables:', env);
 
 Amplify.configure({
   API: {

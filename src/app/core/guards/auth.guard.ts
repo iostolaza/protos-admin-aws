@@ -26,7 +26,7 @@ export const authGuard: CanActivateFn = () => {
   const router = inject(Router);
   return from(getCurrentUser()).pipe(
     map(() => true),
-    catchError(() => of(router.createUrlTree(['/sign-in']))) // Silent redirect
+    catchError(() => of(router.createUrlTree(['/sign-in']))) 
   );
 };
 
@@ -34,7 +34,7 @@ export const authGuard: CanActivateFn = () => {
 export const noAuthGuard: CanActivateFn = () => {
   const router = inject(Router);
   return from(getCurrentUser()).pipe(
-    map(() => router.createUrlTree(['/main-layout'])),
-    catchError(() => of(true)) // Silent allow
+    map(() => router.createUrlTree(['/main-layout/home'])),
+    catchError(() => of(true)) 
   );
 };

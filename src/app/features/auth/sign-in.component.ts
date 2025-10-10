@@ -23,12 +23,12 @@ export class SignInComponent implements OnInit, OnDestroy {
     this.isLoading.set(true);
     this.hubUnsubscribe = Hub.listen('auth', ({ payload }) => {
       if (payload.event === 'signedIn') {
-        this.router.navigate(['/main-layout']);
+        this.router.navigate(['/main-layout/home']);
       }
     });
   
     if (await this.authenticator.authStatus === 'authenticated') {
-      this.router.navigate(['/main-layout']);
+      this.router.navigate(['/main-layout/home']);
     }
     this.isLoading.set(false);
   }
