@@ -9,11 +9,14 @@ References:
 - Cognito Groups in ID Token: https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html
 */
 
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { fetchAuthSession } from 'aws-amplify/auth';
+import { ContactService } from './contact.service';  // Added for friend checks
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  private contactService = inject(ContactService);  // Added
+
   async getUserGroups(): Promise<string[]> {
     try {
       const session = await fetchAuthSession({ forceRefresh: true });
@@ -42,36 +45,46 @@ export class AuthService {
     return claims['sub'] || null;
   }
 
-  async isAdmin(): Promise<boolean> {
+  // Helper: Check if user has a role (suffix match or global)
+  private async hasRole(suffix: string): Promise<boolean> {
     const groups = await this.getUserGroups();
-    return groups.includes('Admin');
+    return groups.includes('cognitoAdmin') || groups.some(g => g.endsWith(suffix));
+  }
+
+  async isAdmin(): Promise<boolean> {
+    return this.hasRole('_Admin');
   }
 
   async isManager(): Promise<boolean> {
-    const groups = await this.getUserGroups();
-    return groups.includes('Manager');
+    return this.hasRole('_Manager');
   }
 
   async isFacilities(): Promise<boolean> {
-    const groups = await this.getUserGroups();
-    return groups.includes('Facilities');
+    return this.hasRole('_Facilities');
   }
 
   async isUser(): Promise<boolean> {
-    const groups = await this.getUserGroups();
-    return groups.includes('User');
+    return this.hasRole('_User');
   }
 
   async canViewTransaction(trans: any): Promise<boolean> {
     if (await this.isAdmin()) return true;
     if (await this.isFacilities()) return false;
+
     if (await this.isManager()) {
       const buildings = await this.getAssignedBuildings();
       return buildings.includes(trans.building);
     }
+
     if (await this.isUser()) {
-      return trans.accountId === (await this.getUserId());
+      const userId = await this.getUserId();
+      if (trans.accountId === userId) return true;
+
+      // Added: Check if accountId is a friend/contact
+      const contacts = await this.contactService.getContacts();
+      return contacts.some(contact => contact.cognitoId === trans.accountId);
     }
+
     return false;
   }
 
@@ -81,10 +94,12 @@ export class AuthService {
 
   async canEditTransaction(trans: any): Promise<boolean> {
     if (await this.isAdmin()) return true;
+
     if (await this.isManager()) {
       const buildings = await this.getAssignedBuildings();
       return buildings.includes(trans.building);
     }
+
     return false;
   }
 

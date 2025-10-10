@@ -1,4 +1,4 @@
-// src/app/app.config.ts
+// src/app/app.config.ts (Full Edited Script)
 
 import { provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -7,12 +7,10 @@ import { provideAngularSvgIcon } from 'angular-svg-icon';
 import { routes } from './app.routes';
 import { provideIconPreload } from './app.icons';
 import { Amplify } from 'aws-amplify';  
-import outputs from '../../amplify_outputs.json';
+import outputs from '../../amplify_outputs.json'; 
 import { UserService } from './core/services/user.service';
 
 import { ApplicationConfig, provideZoneChangeDetection, APP_INITIALIZER } from '@angular/core';
-
-
 
 export function initializeAmplify() {
   return () => {
