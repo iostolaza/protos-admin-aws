@@ -52,9 +52,13 @@ const schema = a.schema({
     .identifier(['cognitoId'])
     .secondaryIndexes(index => [index('email')])
     .authorization(allow => [
-      allow.ownerDefinedIn('cognitoId').identityClaim('sub').to(['read', 'update', 'delete']),
-      allow.authenticated().to(['create', 'read']),
+    allow.group('Admin').to(['create', 'read', 'update', 'delete']),
+    allow.group('team_lead').to(['create', 'read', 'update', 'delete']),
+    allow.authenticated().to(['create', 'read']),
     ]),
+
+
+    
 
   PaymentMethod: a.model({
     userCognitoId: a.string().required(),
