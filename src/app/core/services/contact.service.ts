@@ -94,7 +94,7 @@ export class ContactService {
           username: user.username || '',
           email: user.email || '',
           profileImageKey: user.profileImageKey,
-          status: user.status || 'offline',  // Assume 'online' if set; AWS/Cognito doesn't natively track online status—requires custom presence (e.g., via AppSync subscriptions or IoT). For now, use User.status if updated elsewhere.
+          status: user.status || 'offline', 
           dateAdded: friend.addedAt,
           imageUrl,
           createdAt: user.createdAt,
