@@ -4,26 +4,39 @@ Central service for advanced authentication, including role/group checks using A
 Complements existing auth guards by providing group-based RBAC and custom claims.
 Developer: Francisco Ostolaza  
 Date Created: September 27, 2025  
-References: 
-- Amplify Auth v6: https://docs.amplify.aws/gen2/build-a-backend/auth/accessing-credentials/
-- Cognito Groups in ID Token: https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html
 */
 
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal, computed } from '@angular/core';
 import { fetchAuthSession } from 'aws-amplify/auth';
-import { ContactService } from './contact.service';  // Added for friend checks
+import { ContactService } from './contact.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private contactService = inject(ContactService);  // Added
+  private contactService = inject(ContactService);
 
-  async getUserGroups(): Promise<string[]> {
+  // Reactive signal for groups
+  private groups = signal<string[]>([]);
+
+  // Computed observable-like signal for isAdmin
+  public isAdmin$ = computed(() => this.groups().includes('user_Admin'));
+
+  // Refresh groups (call on sign-in, token refresh, or manually)
+  async refreshGroups(): Promise<void> {
     try {
       const session = await fetchAuthSession({ forceRefresh: true });
-      return session.tokens?.idToken?.payload['cognito:groups'] as string[] || [];
-    } catch {
-      return [];
+      const groups = (session.tokens?.idToken?.payload['cognito:groups'] as string[]) || [];
+      this.groups.set(groups);
+    } catch (err) {
+      console.error('Failed to refresh groups', err);
+      this.groups.set([]);
     }
+  }
+
+  async getUserGroups(): Promise<string[]> {
+    if (this.groups().length === 0) {
+      await this.refreshGroups();
+    }
+    return this.groups();
   }
 
   async getCustomClaims(): Promise<Record<string, any>> {
@@ -45,7 +58,6 @@ export class AuthService {
     return claims['sub'] || null;
   }
 
-  // Helper: Check if user has a role (suffix match or global)
   private async hasRole(suffix: string): Promise<boolean> {
     const groups = await this.getUserGroups();
     return groups.includes('cognitoAdmin') || groups.some(g => g.endsWith(suffix));
@@ -80,7 +92,6 @@ export class AuthService {
       const userId = await this.getUserId();
       if (trans.accountId === userId) return true;
 
-      // Added: Check if accountId is a friend/contact
       const contacts = await this.contactService.getContacts();
       return contacts.some(contact => contact.cognitoId === trans.accountId);
     }
@@ -94,12 +105,10 @@ export class AuthService {
 
   async canEditTransaction(trans: any): Promise<boolean> {
     if (await this.isAdmin()) return true;
-
     if (await this.isManager()) {
       const buildings = await this.getAssignedBuildings();
       return buildings.includes(trans.building);
     }
-
     return false;
   }
 

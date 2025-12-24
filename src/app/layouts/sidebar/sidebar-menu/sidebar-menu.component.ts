@@ -1,5 +1,4 @@
-
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule, NgClass, NgTemplateOutlet } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AngularSvgIconModule } from 'angular-svg-icon';
@@ -7,6 +6,7 @@ import { SubMenuItem } from '../../../core/models/menu.model';
 import { MenuService } from '../../../core/services/menu.service';
 import { SidebarSubmenuComponent } from '../sidebar-submenu/sidebar-submenu.component';
 import { getIconPath } from '../../../core/services/icon-preloader.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-sidebar-menu',
@@ -21,6 +21,7 @@ import { getIconPath } from '../../../core/services/icon-preloader.service';
 })
 export class SidebarMenuComponent {
   getIconPath = getIconPath;
+  authService = inject(AuthService);
 
   constructor(public menuService: MenuService) {}
 

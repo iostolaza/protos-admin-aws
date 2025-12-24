@@ -1,13 +1,14 @@
 // src/app/core/services/user.service.ts
 
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { generateClient } from 'aws-amplify/data';
 import { uploadData, getUrl } from 'aws-amplify/storage';
 import type { Schema } from '../../../../amplify/data/resource';
-import { fetchAuthSession, getCurrentUser } from 'aws-amplify/auth'; 
+import { fetchAuthSession, getCurrentUser } from 'aws-amplify/auth';
 import { Observable, Subject, from } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { Hub } from 'aws-amplify/utils'; 
+import { Hub } from 'aws-amplify/utils';
+import { AuthService } from './auth.service';
 
 type Models = Schema;
 type UserType = Models['User']['type'];
@@ -20,34 +21,39 @@ export type UserProfile = UserType & { profileImageUrl?: string };
 })
 export class UserService {
   private client = generateClient<Schema>();
-  public user = signal<UserProfile | null>(null); // Make public
-  public allUsers = signal<UserType[]>([]); // Cached all users
+  public user = signal<UserProfile | null>(null);
+  public allUsers = signal<UserType[]>([]);
   private destroy$ = new Subject<void>();
+
+  // Inject AuthService to refresh groups on auth events
+  private authService = inject(AuthService);
 
   constructor() {
     this.setupAuthListener();
   }
 
   private setupAuthListener() {
-    Hub.listen('auth', ({ payload }) => {
+    Hub.listen('auth', async ({ payload }) => {
       switch (payload.event) {
         case 'signedIn':
         case 'tokenRefresh':
           console.log('Auth event:', payload.event);
-          this.loadCurrentUser();
+          await this.loadCurrentUser();
+          await this.authService.refreshGroups(); // ← NEW: Refresh groups on sign-in/refresh
           break;
         case 'signedOut':
           this.user.set(null);
-          this.allUsers.set([]); // Clear cache on sign out
+          this.allUsers.set([]);
           break;
       }
     });
 
-    // Initial check
+    // Initial check on app load
     (async () => {
       try {
-        await fetchAuthSession(); // Await to ensure session
+        await fetchAuthSession();
         await this.loadCurrentUser();
+        await this.authService.refreshGroups(); // ← NEW: Refresh groups on initial load
       } catch {
         console.log('No initial user');
       }
@@ -69,7 +75,7 @@ export class UserService {
       let user = userData;
 
       if (!user && email) {
-        const { data: users } = await this.client.models.User.listUserByEmail({ email }); // Fixed: singular model name
+        const { data: users } = await this.client.models.User.listUserByEmail({ email });
         user = users[0];
       }
 
@@ -82,7 +88,7 @@ export class UserService {
           updatedAt: now,
         });
         if (errors) throw new Error(errors.map(e => e.message).join(', '));
-       
+
         const { data: newUser } = await this.client.models.User.get({ cognitoId: userId });
         user = newUser;
       }
@@ -123,14 +129,14 @@ export class UserService {
 
   async save(updated: Partial<UserProfile>) {
     const validUpdated: Partial<UserType> = Object.fromEntries(
-      Object.entries(updated).filter(([key]) => 
+      Object.entries(updated).filter(([key]) =>
         key !== 'cognitoId' && key !== 'createdAt' && key !== 'updatedAt' && key !== 'profileImageUrl'
       )
     );
     await this.updateUser(validUpdated);
   }
 
-  async getAllUsers(nextToken: string | null = null): Promise<UserType[]> {  
+  async getAllUsers(nextToken: string | null = null): Promise<UserType[]> {
     if (this.allUsers().length > 0) {
       console.log('Returning cached all users');
       return this.allUsers();
@@ -144,7 +150,7 @@ export class UserService {
         accumulated.push(...data);
         token = newToken ?? null;
       } while (token);
-      this.allUsers.set(accumulated); // Cache the result
+      this.allUsers.set(accumulated);
       return accumulated;
     } catch (error) {
       console.error('Get all users error:', error);
@@ -164,7 +170,6 @@ export class UserService {
     if (errors) throw new Error(errors.map((e: any) => e.message).join(', '));
     if (!updated) throw new Error('Updated user is null');
     await this.updateProfileFromItem(updated);
-    // Invalidate cache if needed (e.g., if user details change affects list)
     this.allUsers.set([]);
   }
 

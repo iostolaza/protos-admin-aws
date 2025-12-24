@@ -1,5 +1,3 @@
-/* Menu constants, unchanged. */
-
 import { MenuItem } from '../models/menu.model';
 
 export const Menu = {
@@ -41,9 +39,7 @@ export const Menu = {
           ],
         },
         { label: 'Documents', icon: 'document-text', route: '/main-layout/documents' },
-
         { label: 'Financial', icon: 'chart-bar-square', route: '/main-layout/financials' },
-
         { label: 'Analytics', icon: 'chart-bar', route: '/main-layout/analytics' },
         { 
           label: 'Timesheet', icon: 'clock', route: null,
@@ -60,6 +56,17 @@ export const Menu = {
           ],
         },
       ],
+    },
+    {
+      group: 'Administration',
+      separator: true,
+      items: [
+        {
+          label: 'Admin Dashboard',
+          icon: 'shield-check',
+          route: '/main-layout/admin',
+        }
+      ]
     },
     {
       group: 'Account',

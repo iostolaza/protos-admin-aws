@@ -12,6 +12,8 @@ References:
 import { Routes } from '@angular/router';
 import { authGuard, noAuthGuard } from './core/guards/auth.guard';
 
+import { adminGuard } from './core/guards/admin.guard';
+
 // Import layout and auth components (eager for core)
 import { SignInComponent } from './features/auth/sign-in.component';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
@@ -33,7 +35,13 @@ export const routes: Routes = [
       
       // Home dashboard lazy-loaded
       { path: 'home', loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent) },
-      
+
+      {
+        path: 'admin',
+        loadComponent: () => import('./features/admin/admin.component').then(m => m.AdminComponent),
+        canActivate: [adminGuard],
+      },
+            
       // Profile page lazy-loaded
       { path: 'profile', loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent) },
       
