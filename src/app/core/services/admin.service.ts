@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { generateClient } from 'aws-amplify/data';
-import type { Schema } from '../../../amplify/data/resource';
+import type { Schema } from '../../../../amplify/data/resource';
 
 @Injectable({ providedIn: 'root' })
 export class AdminService {
@@ -21,14 +21,13 @@ export class AdminService {
   }
 
   async listUsers() {
-    const { data } = await this.client.models.User.list();
+    const { data } = await this.client.models.User.list({}); // ← Add empty input
     return data ?? [];
   }
 
   async listGroups(): Promise<string[]> {
     const { data } = await this.client.queries.adminListGroups();
-    // Handle nullable: filter out null/undefined and cast to string[]
-    return (data ?? []).filter((g): g is string => g !== null && g !== undefined);
+    return (data ?? []).filter((g): g is string => typeof g === 'string');
   }
 
   async addUserToGroup(email: string, groupName: string) {

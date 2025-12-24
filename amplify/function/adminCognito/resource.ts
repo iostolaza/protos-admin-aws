@@ -1,8 +1,6 @@
 import { defineFunction } from '@aws-amplify/backend';
 
 export const adminCognito = defineFunction({
-  name: 'adminCognito',
-  environment: {
-    REGION: process.env.AWS_REGION!,
-  },
+  // Remove name and environment – Amplify injects them automatically
+  // REGION is available as process.env.REGION in handler
 });
