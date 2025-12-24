@@ -6,6 +6,7 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FinancialService } from '../../../core/services/financial.service';
+import { RoleService } from '../../../core/services/role.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { UserService } from '../../../core/services/user.service';
 import { ContactService } from '../../../core/services/contact.service';
@@ -56,6 +57,7 @@ export class InvoiceDetailsComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private financialService: FinancialService,
+    private role: RoleService,
     private auth: AuthService,
     private userService: UserService,
     private contactService: ContactService,
@@ -85,8 +87,8 @@ export class InvoiceDetailsComponent implements OnInit {
         billFrom: `${user.firstName} ${user.lastName} (${user.email})`,
         fromAddress: user.address ? `${user.address.line1}, ${user.address.city}, ${user.address.state}` : '',
       });
-      this.isManager = await this.auth.isManager();
-      this.isAdminOrManager = this.isManager || await this.auth.isAdmin();
+      this.isManager = await this.role.isManager$();
+      this.isAdminOrManager = this.isManager || await this.role.isAdmin$();
       this.assignedBuildings = await this.auth.getAssignedBuildings();
     }
     const contactsData = await this.contactService.getContacts();

@@ -6,7 +6,7 @@ import { SubMenuItem } from '../../../core/models/menu.model';
 import { MenuService } from '../../../core/services/menu.service';
 import { SidebarSubmenuComponent } from '../sidebar-submenu/sidebar-submenu.component';
 import { getIconPath } from '../../../core/services/icon-preloader.service';
-import { AuthService } from '../../../core/services/auth.service';
+import { RoleService } from '../../../core/services/role.service';
 
 @Component({
   selector: 'app-sidebar-menu',
@@ -21,7 +21,7 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class SidebarMenuComponent {
   getIconPath = getIconPath;
-  authService = inject(AuthService);
+  roleService = inject(RoleService);
 
   constructor(public menuService: MenuService) {}
 

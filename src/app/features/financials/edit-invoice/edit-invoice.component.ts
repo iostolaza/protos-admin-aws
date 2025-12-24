@@ -3,6 +3,7 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FinancialService } from '../../../core/services/financial.service';
+import { RoleService } from '../../../core/services/role.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { UserService } from '../../../core/services/user.service';
 import { ContactService } from '../../../core/services/contact.service';
@@ -40,6 +41,7 @@ export class EditInvoiceComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private financialService: FinancialService,
+    private role: RoleService,
     private auth: AuthService,
     private userService: UserService,
     private contactService: ContactService,
@@ -68,7 +70,7 @@ export class EditInvoiceComponent implements OnInit {
         billFrom: `${currentUser.firstName} ${currentUser.lastName} (${currentUser.email})`,
         fromAddress: currentUser.address ? `${currentUser.address.line1}, ${currentUser.address.city}, ${currentUser.address.state}` : '',
       });
-      this.isManager = await this.auth.isManager();
+      this.isManager = await this.role.isManager$();
       this.assignedBuildings = await this.auth.getAssignedBuildings();
     }
     const contactsData = await this.contactService.getContacts();

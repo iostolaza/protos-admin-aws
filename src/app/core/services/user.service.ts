@@ -1,5 +1,3 @@
-// src/app/core/services/user.service.ts
-
 import { Injectable, signal, inject } from '@angular/core';
 import { generateClient } from 'aws-amplify/data';
 import { uploadData, getUrl } from 'aws-amplify/storage';
@@ -8,7 +6,7 @@ import { fetchAuthSession, getCurrentUser } from 'aws-amplify/auth';
 import { Observable, Subject, from } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Hub } from 'aws-amplify/utils';
-import { AuthService } from './auth.service';
+import { RoleService } from './role.service';
 
 type Models = Schema;
 type UserType = Models['User']['type'];
@@ -25,8 +23,7 @@ export class UserService {
   public allUsers = signal<UserType[]>([]);
   private destroy$ = new Subject<void>();
 
-  // Inject AuthService to refresh groups on auth events
-  private authService = inject(AuthService);
+  private roleService = inject(RoleService);
 
   constructor() {
     this.setupAuthListener();
@@ -39,7 +36,7 @@ export class UserService {
         case 'tokenRefresh':
           console.log('Auth event:', payload.event);
           await this.loadCurrentUser();
-          await this.authService.refreshGroups(); // ← NEW: Refresh groups on sign-in/refresh
+          await this.roleService.refreshGroups();
           break;
         case 'signedOut':
           this.user.set(null);
@@ -48,12 +45,11 @@ export class UserService {
       }
     });
 
-    // Initial check on app load
     (async () => {
       try {
         await fetchAuthSession();
         await this.loadCurrentUser();
-        await this.authService.refreshGroups(); // ← NEW: Refresh groups on initial load
+        await this.roleService.refreshGroups();
       } catch {
         console.log('No initial user');
       }
@@ -87,7 +83,7 @@ export class UserService {
           createdAt: now,
           updatedAt: now,
         });
-        if (errors) throw new Error(errors.map(e => e.message).join(', '));
+        if (errors) throw new Error(errors.map((e: any) => e.message).join(', '));
 
         const { data: newUser } = await this.client.models.User.get({ cognitoId: userId });
         user = newUser;
@@ -146,7 +142,7 @@ export class UserService {
       let token = nextToken;
       do {
         const { data, nextToken: newToken, errors } = await this.client.models.User.list({ nextToken: token ?? undefined });
-        if (errors) throw new Error(errors.map(e => e.message).join(', '));
+        if (errors) throw new Error(errors.map((e: any) => e.message).join(', '));
         accumulated.push(...data);
         token = newToken ?? null;
       } while (token);

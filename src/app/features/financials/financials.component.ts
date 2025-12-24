@@ -5,6 +5,7 @@ import { Component, DestroyRef, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FinancialService } from '../../core/services/financial.service';
+import { RoleService } from '../../core/services/role.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Transaction } from '../../core/models/financial.model';
 import { Invoice } from '../../core/models/financial.model';
@@ -24,6 +25,7 @@ import { Router } from '@angular/router';
 })
 export class FinancialsComponent {
   financialService = inject(FinancialService);
+  roleService = inject(RoleService);
   authService = inject(AuthService);
   destroyRef = inject(DestroyRef);
   transactions = signal<Transaction[]>([]);
@@ -43,14 +45,14 @@ export class FinancialsComponent {
       this.loadInitialData();
     });
   }
-
+ 
   private async loadInitialData() {
     console.log('loadInitialData started');
     try {
-      this.canCreate.set(await this.authService.canCreateTransaction());
-      console.log('canCreate set to', this.canCreate());
-      this.isManager.set(await this.authService.isManager());
-      console.log('isManager set to', this.isManager());
+      this.canCreate.set(this.roleService.isAdmin$() || this.roleService.isManager$());
+      console.log('canCreate set to', this.roleService.isAdmin$() || this.roleService.isManager$());
+      this.isManager.set(this.roleService.isManager$());
+      console.log('isManager set to', this.roleService.isManager$());
       this.assignedBuildings.set(await this.authService.getAssignedBuildings());
       console.log('assignedBuildings set to', this.assignedBuildings());
       const id = await this.authService.getUserId();
