@@ -1,5 +1,6 @@
 import { a, defineData, type ClientSchema } from '@aws-amplify/backend';
 import { postConfirmation } from '../auth/post-confirmation/resource';
+import { adminCognito } from '../function/adminCognito/resource'; 
 
 const schema = a.schema({
   User: a.model({
@@ -46,19 +47,16 @@ const schema = a.schema({
     messagesSent: a.hasMany('Message', 'senderCognitoId'),
     contacts: a.hasMany('Friend', 'ownerCognitoId'),
     friendsOf: a.hasMany('Friend', 'friendCognitoId'),
-    invoicesFrom: a.hasMany('Invoice', 'billFromId'), 
+    invoicesFrom: a.hasMany('Invoice', 'billFromId'),
     invoicesTo: a.hasMany('Invoice', 'billToId'),
   })
     .identifier(['cognitoId'])
     .secondaryIndexes(index => [index('email')])
     .authorization(allow => [
-    allow.group('Admin').to(['create', 'read', 'update', 'delete']),
-    allow.group('team_lead').to(['create', 'read', 'update', 'delete']),
-    allow.authenticated().to(['create', 'read']),
+      allow.group('user_Admin').to(['create', 'read', 'update', 'delete']),
+      allow.group('team_lead').to(['create', 'read', 'update', 'delete']),
+      allow.authenticated().to(['create', 'read']),
     ]),
-
-
-    
 
   PaymentMethod: a.model({
     userCognitoId: a.string().required(),
@@ -81,7 +79,7 @@ const schema = a.schema({
     .secondaryIndexes(index => [index('ownerCognitoId').sortKeys(['addedAt'])])
     .authorization(allow => [
       allow.ownerDefinedIn('ownerCognitoId').identityClaim('sub').to(['read', 'update', 'delete']),
-      allow.group('Admin').to(['create', 'read', 'update', 'delete']),
+      allow.group('user_Admin').to(['create', 'read', 'update', 'delete']),
       allow.authenticated().to(['create']),
     ]),
 
@@ -99,7 +97,7 @@ const schema = a.schema({
     .authorization(allow => [
       allow.ownerDefinedIn('creatorCognitoId').identityClaim('sub').to(['update', 'delete']),
       allow.authenticated().to(['create', 'read']),
-      allow.group('Admin').to(['create', 'read', 'update', 'delete']),
+      allow.group('user_Admin').to(['create', 'read', 'update', 'delete']),
     ]),
 
   UserChannel: a.model({
@@ -115,7 +113,7 @@ const schema = a.schema({
     .authorization(allow => [
       allow.authenticated().to(['create', 'read']),
       allow.ownerDefinedIn('userCognitoId').identityClaim('sub').to(['update', 'delete']),
-      allow.group('Admin').to(['create', 'read', 'update', 'delete']),
+      allow.group('user_Admin').to(['create', 'read', 'update', 'delete']),
     ]),
 
   Message: a.model({
@@ -134,7 +132,7 @@ const schema = a.schema({
     .authorization(allow => [
       allow.authenticated().to(['create', 'read']),
       allow.ownerDefinedIn('senderCognitoId').identityClaim('sub').to(['update', 'delete']),
-      allow.group('Admin').to(['create', 'read', 'update', 'delete']),
+      allow.group('user_Admin').to(['create', 'read', 'update', 'delete']),
     ]),
 
   Team: a.model({
@@ -150,7 +148,7 @@ const schema = a.schema({
     tickets: a.hasMany('Ticket', 'teamId'),
   }).authorization(allow => [
     allow.ownerDefinedIn('teamLeadCognitoId').identityClaim('sub').to(['read', 'update', 'delete']),
-    allow.group('Admin').to(['create', 'read', 'update', 'delete']),
+    allow.group('user_Admin').to(['create', 'read', 'update', 'delete']),
     allow.group('team_lead').to(['create', 'read']),
     allow.authenticated().to(['read']),
   ]),
@@ -163,7 +161,7 @@ const schema = a.schema({
     user: a.belongsTo('User', 'userCognitoId'),
     team: a.belongsTo('Team', 'teamId'),
   }).authorization(allow => [
-    allow.group('Admin').to(['create', 'read', 'update', 'delete']),
+    allow.group('user_Admin').to(['create', 'read', 'update', 'delete']),
     allow.group('team_lead').to(['create', 'read', 'update', 'delete']),
     allow.authenticated().to(['read']),
   ]),
@@ -190,7 +188,7 @@ const schema = a.schema({
   })
     .authorization(allow => [
       allow.ownerDefinedIn('requesterId').identityClaim('sub'),
-      allow.groups(['Admin', 'team_lead', 'member'])
+      allow.groups(['user_Admin', 'team_lead', 'member'])
     ]),
 
   Comment: a.model({
@@ -203,7 +201,7 @@ const schema = a.schema({
   })
     .authorization(allow => [
       allow.ownerDefinedIn('userCognitoId').identityClaim('sub'),
-      allow.groups(['Admin', 'team_lead', 'member'])
+      allow.groups(['user_Admin', 'team_lead', 'member'])
     ]),
 
   Notification: a.model({
@@ -217,7 +215,7 @@ const schema = a.schema({
   })
     .authorization(allow => [
       allow.ownerDefinedIn('userCognitoId').identityClaim('sub'),
-      allow.groups(['Admin'])
+      allow.group('user_Admin')
     ]),
 
   Document: a.model({
@@ -250,11 +248,11 @@ const schema = a.schema({
     ])
     .authorization(allow => [
       allow.groupsDefinedIn('permissions').to(['read']),
-      allow.group('Admin').to(['create', 'read', 'update', 'delete']),
-      allow.group('Manager').to(['create', 'read', 'update', 'delete']),
+      allow.group('user_Admin').to(['create', 'read', 'update', 'delete']),
+      allow.group('user_Manager').to(['create', 'read', 'update', 'delete']),
       allow.group('team_lead').to(['read', 'update']),
-      allow.group('User').to(['read']),
-      allow.group('Facilities').to(['read'])
+      allow.group('user_Tenant').to(['read']),
+      allow.group('user_Facilities').to(['read'])
     ]),
 
   Transaction: a.model({
@@ -284,12 +282,12 @@ const schema = a.schema({
     ])
     .authorization(allow => [
       allow.ownerDefinedIn('accountId').identityClaim('sub').to(['read']),
-      allow.group('Admin').to(['create', 'read', 'update', 'delete']),
-      allow.group('Manager').to(['read', 'update']),
-      allow.group('User').to(['read'])
+      allow.group('user_Admin').to(['create', 'read', 'update', 'delete']),
+      allow.group('user_Manager').to(['read', 'update']),
+      allow.group('user_Tenant').to(['read'])
     ]),
 
-Invoice: a.model({
+  Invoice: a.model({
     invoiceId: a.id().required(),
     invoiceNumber: a.string().required(),
     date: a.date().required(),
@@ -311,17 +309,17 @@ Invoice: a.model({
     items: a.hasMany('InvoiceItem', 'invoiceId'),
   })
     .identifier(['invoiceId'])
-    .secondaryIndexes(index => [index('billToId').sortKeys(['date'])])  
+    .secondaryIndexes(index => [index('billToId').sortKeys(['date'])])
     .authorization(allow => [
       allow.authenticated().to(['create']),
-      allow.ownerDefinedIn('billFromId').identityClaim('sub').to(['read', 'update', 'delete']), 
-      allow.ownerDefinedIn('billToId').identityClaim('sub').to(['read']),  
-      allow.group('Admin').to(['create', 'read', 'update', 'delete']), 
-      allow.group('Manager').to(['read', 'update']),
-      allow.group('User').to(['read'])  
+      allow.ownerDefinedIn('billFromId').identityClaim('sub').to(['read', 'update', 'delete']),
+      allow.ownerDefinedIn('billToId').identityClaim('sub').to(['read']),
+      allow.group('user_Admin').to(['create', 'read', 'update', 'delete']),
+      allow.group('user_Manager').to(['read', 'update']),
+      allow.group('user_Tenant').to(['read'])
     ]),
 
-InvoiceItem: a.model({
+  InvoiceItem: a.model({
     invoiceItemId: a.id().required(),
     invoiceId: a.id().required(),
     name: a.string().required(),
@@ -333,11 +331,58 @@ InvoiceItem: a.model({
     .identifier(['invoiceItemId'])
     .secondaryIndexes(index => [index('invoiceId')])
     .authorization(allow => [
-      allow.authenticated().to(['create']),  // NEW: Fallback for signed-in (secured by Invoice FK/index; allows Admin token)
-      allow.group('Admin').to(['create', 'read', 'update', 'delete']),
-      allow.group('Manager').to(['read', 'update']),
-      allow.group('User').to(['read'])
+      allow.authenticated().to(['create']),
+      allow.group('user_Admin').to(['create', 'read', 'update', 'delete']),
+      allow.group('user_Manager').to(['read', 'update']),
+      allow.group('user_Tenant').to(['read'])
     ]),
+
+  // ——— ADMIN CUSTOM OPERATIONS ———
+  adminInviteUser: a
+    .mutation()
+    .arguments({
+      email: a.string().required(),
+      firstName: a.string().required(),
+      lastName: a.string().required(),
+      role: a.enum(['Admin', 'Manager', 'Facilities', 'Tenant']), // no .required() here
+      applicationType: a.enum(['Tenant', 'Employee']),
+    })
+    .returns(a.boolean())
+    .authorization(allow => [allow.group('user_Admin')])
+    .handler(a.handler.function(adminCognito)),
+
+  adminListGroups: a
+    .query()
+    .returns(a.string().array())
+    .authorization(allow => [allow.group('user_Admin')])
+    .handler(a.handler.function(adminCognito)),
+
+  adminAddUserToGroup: a
+    .mutation()
+    .arguments({
+      email: a.string().required(),
+      groupName: a.string().required(),
+    })
+    .returns(a.boolean())
+    .authorization(allow => [allow.group('user_Admin')])
+    .handler(a.handler.function(adminCognito)),
+
+  adminRemoveUserFromGroup: a
+    .mutation()
+    .arguments({
+      email: a.string().required(),
+      groupName: a.string().required(),
+    })
+    .returns(a.boolean())
+    .authorization(allow => [allow.group('user_Admin')])
+    .handler(a.handler.function(adminCognito)),
+
+  adminListUsersInGroup: a
+    .query()
+    .arguments({ groupName: a.string().required() })
+    .returns(a.json())
+    .authorization(allow => [allow.group('user_Admin')])
+    .handler(a.handler.function(adminCognito)),
 
 }).authorization(allow => [allow.resource(postConfirmation)]);
 
